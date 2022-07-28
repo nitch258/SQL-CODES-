@@ -1,0 +1,44 @@
+---Using UPPER and lower
+
+select upper(first_name) as first_name, lower(last_name) as last_name
+from employee 
+
+-- Using Trim, LTRIM, RTRIM
+select trim(first_name)--ltrim,rtrim remove space
+from employee
+
+
+
+--where,  order by, IN
+
+select first_name, last_name, sex, salary
+from employee 
+where branch_id in (1, 2)
+order by salary desc 
+
+---wildcards 
+
+select * from employee 
+where first_name like 'S%'
+
+select * from employee 
+where emp_id=102 and 
+last_name like '%_am%'
+
+---aggregate function,subquerry 
+ 
+select sum(salary) total_salary, branch_id 
+from employee 
+group by branch_id 
+
+
+select distinct(emp_id), concat(first_name, ' ', last_name)as full_name
+from employee 
+where salary >
+(select avg(salary)
+from employee) 
+and emp_id <> 100
+
+select 
+(select count (*) from employee where sex ='M')as Male_count,
+(select count (*) from employee where sex ='F')as Female_count
