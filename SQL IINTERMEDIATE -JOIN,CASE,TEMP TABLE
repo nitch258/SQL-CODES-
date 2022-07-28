@@ -1,0 +1,46 @@
+---join, union
+select employee.first_name, employee.last_name,branch.branch_name 
+from employee 
+join branch -- LEFT JOIN, RIGHT JOIN
+on employee.branch_id = branch.branch_id 
+
+select emp_id
+from employee
+union 
+select branch_id 
+from branch 
+--case 
+select emp_id, first_name, last_name ,salary, branch_name,
+case when salary > 45000 then 'High Salary'
+when salary >=31000 then 'Mid Salary'
+else 'Low Salary' 
+end as salary_range 
+from employee
+join branch 
+on employee.branch_id = branch.branch_id 
+order by salary desc,  
+last_name desc 
+
+---temp table 
+first_name asc ,
+
+Create table #temp_employee2 (
+EmployeeID int,
+JobTitle varchar(100),
+Salary int
+)
+
+select * from #temp_employee2
+  
+  Insert into #temp_employee2 values (
+'1001', 'HR', 45000
+)
+
+drop table if exists #temp_employee2 
+
+---partition by
+
+select first_name, last_name, sex , salary ,
+count (sex) over (partition by sex) as total_gender 
+from employee 
+order by 4 desc  
