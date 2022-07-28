@@ -1,0 +1,86 @@
+select  month ([Ship Date]) as sales_month,--- percentage of sales in the year 2014
+sum([Sales]) as sales_amount,
+round(sum([Sales])/ sum(sum([Sales])) over (), 4) *100 as percentage_of_total 
+from [dbo].[Orders$]
+where year([Ship Date]) = 2014
+group by month ([Ship Date])
+order by sales_amount desc  
+
+select  month ([Ship Date]) as sales_month,--- percentage of sales in the year 2014
+sum([Profit]) as profit_amount,
+cast(round(sum([Profit])/ sum(sum([Profit])) over (), 4) *100 as nvarchar(5)) + '%' as percentage_of_total 
+from [dbo].[Orders$]
+where year([Ship Date]) = 2014
+group by month ([Ship Date])
+order by profit_amount desc  
+
+select  month ([Ship Date]) as sales_month,--- percentage of sales in the year 2014
+sum([Profit]) as profit_amount,
+cast(round(sum([Profit])/ sum(sum([Profit])) over (), 4) *100 as nvarchar(5)) + '%' as percentage_of_total 
+from [dbo].[Orders$]
+where year([Ship Date]) = 2014
+group by month ([Ship Date])
+order by profit_amount desc  
+
+
+select [Category] as sales_Category,--- percentage of sales group by category 
+sum([Profit]) as profit_amount,
+cast(round(sum([Profit])/ sum(sum([Profit])) over (), 4) *100 as nvarchar(5)) + '%' as percentage_of_total 
+from [dbo].[Orders$]
+where year([Ship Date]) = 2014
+group by [Category]
+order by profit_amount desc  
+
+select [Region] as sales_Category,--- percentage of sales per region 
+sum([Profit]) as profit_amount,
+cast(round(sum([Profit])/ sum(sum([Profit])) over (), 4) *100 as nvarchar(5)) + '%' as percentage_of_total 
+from [dbo].[Orders$]
+where year([Ship Date]) = 2014
+group by [Region]
+order by profit_amount desc  
+
+
+--- who is the best customer 
+
+select distinct count(([Customer Name])) from Orders$
+
+
+select * from Orders$
+drop table if exists #rfm
+;with rfm as
+(
+select [Customer Name],
+	avg ([Sales]) as monetary_value ,
+	count ([Order ID]) as total_order, 
+	max([Ship Date]) as total_date ,  
+	(select max ([Ship Date]) from Orders$) as max_date,
+	DATEDIFF(dd,max([Ship Date]),(select max ([Ship Date]) from Orders$)) as  recency 
+	from [dbo].[Orders$]
+	group by [Customer Name]
+	),
+ rfm_calc as 
+	(select r. *,
+	NTILE(4) OVER (ORDER BY recency DESC ) RFM_RECENCY,
+	NTILE(4) OVER (ORDER BY total_order  ) RFM_FREQUENCY,
+	NTILE(4) OVER (ORDER BY monetary_value) RFM_SALES
+	from rfm r )
+select c. *,
+RFM_RECENCY + RFM_FREQUENCY+  RFM_SALES as RFM_values
+into #rfm 
+from rfm_calc c 
+
+
+drop table if exists #rfms
+	select  [Customer Name],
+	CASE WHEN RFM_values >9 then 'High Value Customer'
+	when RFM_values >= 5 then 'Medium Value Customer'
+	else 'Low Value Customer'
+	end as Customer_Rating
+	---into #rfms
+from #rfm
+	order by RFM_values desc 
+
+select customer_rating,
+count (customer_rating)
+from #rfms
+group by Customer_Rating
