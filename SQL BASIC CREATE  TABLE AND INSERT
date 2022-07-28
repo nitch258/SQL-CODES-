@@ -1,0 +1,61 @@
+ ---Creating Table 
+create table employee(
+emp_id int primary key,
+first_name VARCHAR (50),
+last_name VARCHAR (50),
+birth_date date, 
+salary int , 
+sex varchar (1),
+branch_id int ,
+super_id int )
+
+CREATE TABLE branch (
+  branch_id INT PRIMARY KEY,
+  branch_name VARCHAR(40),
+  mgr_id INT,
+  mgr_start_date DATE,
+  FOREIGN KEY(mgr_id) REFERENCES employee(emp_id))
+
+  --alter table 
+ ALTER TABLE employee
+ADD FOREIGN KEY(branch_id)
+REFERENCES branch(branch_id)
+ON DELETE SET NULL
+
+alter table employee 
+drop column super_id 
+
+---insert value 
+
+insert into employee values (100,'Nitch', 'Estimable', '1999-07-21',75000,'M', null) 
+
+insert into branch values (1, 'Corporate', 100, '2020-03-22')
+
+insert into branch values (2, 'EBY',101, '2021-05-13')
+insert into branch values (3,'Relli',101,'2021-04-18')
+
+
+SELECT * FROM EMPLOYEE 
+select * from branch
+
+update employee
+set branch_id =1  
+where emp_id =100 
+
+insert into employee values
+(101,'John', 'Cena', '1998-09-22', 50000,'M',1)
+
+insert into employee values 
+(102,'Ben', 'Lamp', '1998-07-23', 45000, 'M',1),
+(103,'Sarah', 'Lamp', '2000-01-10',44000,'F',2),
+(104,'Jessica', 'Frost','1999-12-15',40000,'F',2),
+(105,'Sam', 'Gerbert','1998-10-15',40000,'F',2),
+(106,'Sam', 'Love', '1999-03-01', 35000, 'F',3),
+(107, 'Marcos','Oliver','2001-11-23', 30000, 'M',3),
+(108, 'Andy', 'Bernard', '2001-07-22',35000, 'M',3),
+(109, 'Jim', 'Halpert', '2000-10-01', 31000,'M', 3),
+(110, 'Nole', 'Taff', '1996-04-07',3150,'M',3)
+
+update employee 
+set sex='M'
+where emp_id = 105
